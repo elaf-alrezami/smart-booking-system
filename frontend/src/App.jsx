@@ -1,121 +1,65 @@
 import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import axios from './lib/axios'
+import AdminDashboard from './components/AdminDashboard'
+import ServicesManager from './components/ServicesManager'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [user, setUser] = useState(null)
+  const [error, setError] = useState('')
+
+  const handleDemoLogin = async () => {
+    try {
+      setError('')
+      const response = await axios.post('/demo-login')
+      localStorage.setItem('access_token', response.data.access_token)
+      setUser(response.data.user)
+    } catch (err) {
+      setError('فشل الاتصال بالخادم.')
+    }
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    setUser(null);
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="min-h-screen p-4 md:p-8">
+      {/* الترويسة */}
+      <header className="max-w-6xl mx-auto flex justify-between items-center mb-8">
+        <h1 className="text-2xl font-bold text-accent">نظام الحجوزات</h1>
+        {user && (
+          <div className="flex items-center gap-4">
+            <span className="text-gray-400">أهلاً، {user.name}</span>
+            <button onClick={handleLogout} className="text-sm bg-red-500/10 text-red-500 px-4 py-2 rounded hover:bg-red-500/20 cursor-pointer">
+              خروج
+            </button>
+          </div>
+        )}
+      </header>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      {/* المحتوى الرئيسي */}
+      <main className="max-w-6xl mx-auto">
+        {!user ? (
+          <div className="max-w-md mx-auto bg-[#1e1e1e] rounded-xl shadow-lg p-8 border border-gray-800 text-center mt-20">
+            <h2 className="text-xl font-bold mb-6">تسجيل الدخول للإدارة</h2>
+            <button onClick={handleDemoLogin} className="w-full bg-accent text-dark font-bold py-3 rounded-lg hover:opacity-90 transition-opacity mb-4 cursor-pointer">
+              دخول تجريبي (Admin)
+            </button>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+          </div>
+        ) : user.role === 'admin' ? (
+          <div className="flex flex-col gap-8">
+            <AdminDashboard user={user} />
+            <ServicesManager />
+          </div>
+        ) : (
+          <div className="text-center p-8 bg-[#1e1e1e] rounded-xl border border-gray-800 text-yellow-400">
+            هذه الواجهة مخصصة للمدراء فقط.
+          </div>
+        )}
+      </main>
+    </div>
   )
 }
 
