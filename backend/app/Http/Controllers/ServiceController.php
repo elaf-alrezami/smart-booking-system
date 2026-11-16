@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Service;
 use App\Http\Requests\StoreServiceRequest;
-use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
