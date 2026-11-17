@@ -1,0 +1,60 @@
+{
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "new-booking",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2.2,
+            "position": [
+                0,
+                0
+            ],
+            "id": "bf1f8c0d-63e5-4164-a6e8-e145a1ed0a8e",
+            "name": "Webhook",
+            "webhookId": "728d74c4-3a43-4f17-8e9b-a486ca37e7c9"
+        },
+        {
+            "parameters": {
+                "chatId": "",
+                "text": "=🔔 إشعار بحجز جديد!\n\nالعميل: {{$json.body.client_name}}\nالبريد: {{$json.body.client_email}}\nالخدمة: {{$json.body.service_name}}\nالتاريخ: {{$json.body.booking_date}}\nالوقت: {{$json.body.time_slot}}\nالسعر: {{$json.body.price}}\nالحالة: {{$json.body.status}}",
+                "additionalFields": {}
+            },
+            "type": "n8n-nodes-base.telegram",
+            "typeVersion": 1.2,
+            "position": [
+                224,
+                0
+            ],
+            "id": "3ac80e28-1f06-4971-873a-dfe7ca5e788d",
+            "name": "Send a text message",
+            "webhookId": "bcd20fa0-1c3a-4ebb-b99e-60c5c0ceeb8a",
+            "credentials": {
+                "telegramApi": {
+                    "id": "JOwT2E3nkYiMusML",
+                    "name": "Telegram account"
+                }
+            }
+        }
+    ],
+        "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Send a text message",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": { },
+    "meta": {
+        "templateCredsSetupCompleted": true,
+            "instanceId": ""
+    }
+}
