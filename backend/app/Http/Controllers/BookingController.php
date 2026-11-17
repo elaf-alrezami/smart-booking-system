@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\Schedule;
 use App\Http\Requests\StoreBookingRequest;
 use Illuminate\Http\Request;
+use App\Services\NotificationService;
 
 class BookingController extends Controller
 {
@@ -72,6 +73,10 @@ class BookingController extends Controller
             $request->validated(),
             ['user_id' => $request->user()->id, 'status' => 'pending']
         ));
+
+        // استدعاء خدمة الإشعارات لإرسال Webhook إلى n8n
+        $notificationService = new NotificationService();
+        $notificationService->sendNewBookingNotification($booking);
 
         return response()->json(['message' => 'تم إنشاء الحجز بنجاح', 'booking' => $booking], 201);
     }
